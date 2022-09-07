@@ -115,6 +115,49 @@ void media_control_release(uint16_t keycode) {
 	xQueueSend(media_q, (void*) &media_state, (TickType_t) 0);
 }
 
+void mouse_key_send(uint16_t keycode) {
+	uint8_t mouse_state[5] = {0};
+
+	switch(keycode)
+	{	
+		case KC_MS_UP :
+			mouse_state[2] = 15;
+			break;
+
+		case KC_MS_DOWN:
+			mouse_state[2] = -15;
+			break;
+
+		case KC_MS_LEFT:
+			mouse_state[1] = -15;
+			break;
+
+		case KC_MS_RIGHT:
+			mouse_state[1] = 15;
+			break;
+
+		case KC_MS_BTN1:
+			mouse_state[0] = 1;
+			break;
+
+		case KC_MS_BTN2:
+			mouse_state[0] = 2;
+			break;
+
+		case KC_MS_WH_UP:
+			mouse_state[3] = 1;
+			break;
+		case KC_MS_WH_DOWN:
+			mouse_state[3] = -1;
+			break;
+	}
+	xQueueSend(mouse_q,(void*)&mouse_state, (TickType_t) 0);
+}
+
+void mouse_key_release(uint16_t keycode) {
+	uint8_t mouse_state[5] = {0};
+	xQueueSend(mouse_q,(void*)&mouse_state, (TickType_t) 0);
+}
 //used for debouncing
 static uint32_t millis() {
 	return esp_timer_get_time() / 1000;
@@ -241,6 +284,12 @@ uint8_t *check_key_state(uint16_t **keymap) {
 							&& (keycode <= KC_AUDIO_VOL_DOWN)) {
 						media_control_send(keycode);
 					}
+					
+					// mouse check maybe
+					if ((keycode >= KC_MS_UP)
+							&& (keycode <= KC_MS_ACCEL2)) {
+						mouse_key_send(keycode);
+					}
 
 					// checking for system control keycodes
 					//				if((keycode>=0XA8)&&(keycode<=0XA7)){
@@ -294,6 +343,11 @@ uint8_t *check_key_state(uint16_t **keymap) {
 						if ((keycode >= KC_MEDIA_NEXT_TRACK)
 								&& (keycode <= KC_AUDIO_VOL_DOWN)) {
 							media_control_release(keycode);
+						}
+
+						if ((keycode >= KC_MS_UP)
+								&& (keycode <= KC_MS_ACCEL2)) {
+							mouse_key_release(keycode);
 						}
 					}
 

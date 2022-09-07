@@ -15,34 +15,39 @@
 #include "freertos/event_groups.h"
 #include "oled_tasks.h"
 
-#define MODULE_ID "LOLIN 32"
+#define MODULE_ID "ESP 32"
 #define GATTS_TAG "MK32 V3.0" // The device's name
 #define MAX_BT_DEVICENAME_LENGTH 40
 
 #define MASTER  // undefine if you are not flashing the main controller
-#define SPLIT_MASTER	 // undefine if keyboard is not split and master
+//#define SPLIT_MASTER	 // undefine if keyboard is not split and master
 //#define SLAVE	 // undefine if keyboard is master
 
 #define DEBOUNCE 4 //debounce time in ms
 
 //Define matrix
-#define KEYPADS 2 // intended in order to create a Multiple keypad split boards
-#define MATRIX_ROWS 6
-#define MATRIX_COLS 6 // For split keyboards, define columns for one side only.
+#define KEYPADS 1 // intended in order to create a Multiple keypad split boards
+#define MATRIX_ROWS 3
+#define MATRIX_COLS 5 // For split keyboards, define columns for one side only.
 
 #define NKRO // does not work on Android and iOS!,  we can get 18KRO on those
-#define LAYERS 3 // number of layers defined
+#define LAYERS 1 // number of layers defined
 
 // Select diode direction
 #define COL2ROW
 //#define ROW2COL
 
+#define USE_JOYSTICK
+#define JOYSTICK_X_AXIS ADC1_CHANNEL_0 // 36
+#define JOYSTICK_Y_AXIS ADC1_CHANNEL_3 // 39
+#define JOYSTICK_SWITCH GPIO_NUM_34
+
 //Encoder definitions
-//#define R_ENCODER // undefine if no rotary encoder is used
-#define R_ENCODER_SLAVE // undefine if no rotary encoder is used on slave pad
-#define ENCODER_A_PIN GPIO_NUM_17 // encoder phase A pin
-#define ENCODER_B_PIN GPIO_NUM_34// encoder phase B pin
-#define ENCODER_S_PIN GPIO_NUM_16// encoder switch pin
+#define R_ENCODER // undefine if no rotary encoder is used
+//#define R_ENCODER_SLAVE // undefine if no rotary encoder is used on slave pad
+#define ENCODER_A_PIN GPIO_NUM_19 // encoder phase A pin
+#define ENCODER_B_PIN GPIO_NUM_18// encoder phase B pin
+#define ENCODER_S_PIN GPIO_NUM_35// encoder switch pin
 
 //OLED Parameters
 //#define OLED_ENABLE //undefine if no oled is used

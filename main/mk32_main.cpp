@@ -51,6 +51,7 @@
 #include "espnow_send.h"
 #include "r_encoder.h"
 #include "battery_monitor.h"
+#include "joystick.h"
 #include "nvs_funcs.h"
 #include "nvs_keymaps.h"
 
@@ -195,6 +196,27 @@ extern "C" void encoder_report(void *pvParameters) {
 			DEEP_SLEEP = false;
 			r_encoder_command(encoder_state, encoder_map[current_layout]);
 			past_encoder_state = encoder_state;
+		}
+
+	}
+}
+
+//Handling joystick
+extern "C" void joystick_state_report(void *pvParameters) {
+	struct joystick_state_t joystick_current_state;
+	joystick_current_state.x_axis = 0;
+	joystick_current_state.y_axis = 0;
+	joystick_current_state.pressed = 0;
+	struct joystick_state_t joystick_past_state = joystick_current_state;
+
+	while (1) {
+		joystick_current_state = joystick_state();
+		if (joystick_current_state.x_axis != joystick_past_state.x_axis || 
+			joystick_current_state.y_axis != joystick_past_state.y_axis || 
+			joystick_current_state.pressed != joystick_past_state.pressed) {
+			DEEP_SLEEP = false;
+			joystick_command(joystick_current_state);
+			joystick_past_state = joystick_current_state;
 		}
 
 	}
@@ -362,6 +384,13 @@ extern "C" void app_main() {
 #ifdef	R_ENCODER
 	r_encoder_setup();
 	xTaskCreatePinnedToCore(encoder_report, "encoder report", 4096, NULL,
+			configMAX_PRIORITIES, NULL, 1);
+	ESP_LOGI("Encoder", "initializezd");
+#endif
+
+#ifdef	USE_JOYSTICK
+	joystick_setup();
+	xTaskCreatePinnedToCore(joystick_state_report, "joystick report", 4096, NULL,
 			configMAX_PRIORITIES, NULL, 1);
 	ESP_LOGI("Encoder", "initializezd");
 #endif
