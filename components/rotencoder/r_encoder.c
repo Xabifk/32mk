@@ -38,6 +38,9 @@ void r_encoder_command(uint8_t command, uint16_t encoder_commands[4]){
 
 	switch(type){
 	case MEDIA_ENCODER:
+		if (command != 0) {
+			printf("%d\n", command);
+		}
 		if(command>=4){
 			command=3;
 		}
@@ -160,7 +163,7 @@ void r_encoder_setup(void){
 #ifdef ENCODER_S_PIN
 	gpio_pad_select_gpio(ENCODER_S_PIN);
 	gpio_set_direction(ENCODER_S_PIN, GPIO_MODE_INPUT);
-	gpio_set_pull_mode(ENCODER_S_PIN,GPIO_PULLDOWN_ONLY);
+	gpio_set_pull_mode(ENCODER_S_PIN,GPIO_PULLUP_ONLY);
 #endif
 
 }
@@ -176,7 +179,7 @@ uint8_t r_encoder_state(void){
 		EncoderState = 2;
 	}
 #ifdef ENCODER_S_PIN
-	if(gpio_get_level(ENCODER_S_PIN)==1){
+	if(gpio_get_level(ENCODER_S_PIN)==0){
 		EncoderState+= 4;
 	}
 #endif
